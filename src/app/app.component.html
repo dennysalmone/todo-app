@@ -4,9 +4,24 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
   <title></title>
 </head>
 <body>
-  hello i am app component and i give for you data from {{URL}} - {{res}}
+  <div id="wrapper">
+    <ng-container *ngFor="let task of tempArrayOfTodos; index as x">
+      <div>
+        <span>{{task?.title}}</span>
+        <button (click)="deleteTask(task)">DELETE</button>
+      </div>
+    </ng-container>
+</div>
+<!-- <div class="card blue-grey darken-1 col s12 m6 row" (click)="onBodyClick()">
+  <h3>hello boys! my favourite beers are {{res[0].name}} and {{res[1].name}} - thanks for attention!</h3>
+</div> -->
 </body>
 </html>
+
+
+
+
