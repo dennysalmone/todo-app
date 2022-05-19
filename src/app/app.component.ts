@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { task } from './types/types';
+import { task, taskObj } from './types/types';
 
 @Component({
   selector: 'app-root',
@@ -10,8 +10,8 @@ export class AppComponent {
   title = 'angular-todo-frontend';
   port: number = 3000;
   res: any = 'placeholder';
+  newTodotask: string = '';
   // URL: string = `http://localhost:${this.port}/`
-  URL: string = 'https://api.punkapi.com/v2/beers?page=1&per_page=2'
   tempArrayOfTodos: task[] = [
     {id:1, title: "покушать", status: true},
     {id:2, title: "покакать", status: true},
@@ -21,7 +21,7 @@ export class AppComponent {
     ]; // временно, позже получаем из локалхост/3000 как this.res
 
   ngOnInit (): void {
-    this.serverRequest(this.URL)
+    // this.serverRequest(this.URL)
   }
 
   serverRequest(URL: string): void {
@@ -34,11 +34,30 @@ export class AppComponent {
     });
   }
 
-  deleteTask(todo: task): void {
-    console.log(todo?.id + ' мы пока не можем удалить это, НО ОЧЕНЬ СТАРАЕМСЯ')
+  toggleStyleCheck(todo: task) {
+    if(todo?.status) {
+      return {'color': 'green'}
+    } else {
+      return {'color': 'red'}
+    }
   }
 
-  onBodyClick(): void {
-    console.log(this.res)
+  deleteTask(todo: task): void {
+    console.log('удалил тудушку с тексом ', todo?.title);
+    var index = this.tempArrayOfTodos.indexOf(todo);
+    this.tempArrayOfTodos.splice(index, 1);     
+  }
+
+  toggleStatus(todo: task): void {
+    console.log(`переключил статус тудушки ${todo?.title} на ${!(todo?.status)}`);
+    (todo as taskObj).status = !(todo as taskObj).status;
+  }
+
+  createNewTodo(value: string): void {
+    console.log(`добавил тудушку с текстом ${value}`)
+    if (value) {
+      this.tempArrayOfTodos.push({id:1, title: value, status: true})
+      this.newTodotask = ''
+    }
   }
 }
