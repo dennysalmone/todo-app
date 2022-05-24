@@ -10,34 +10,11 @@
 </div>
 <br>
 
+<form (ngSubmit)="createNewTodo(newTodotask)">
+  <input [(ngModel)]="newTodotask" name="first" #ctrl="ngModel" required placeholder="your todo...">
+  <button type='submit' class="">Submit</button>
+</form>
 
-
-
-
-  <form (ngSubmit)="createNewTodo(newTodotask)">
-      <input [(ngModel)]="newTodotask" name="first" #ctrl="ngModel" required placeholder="your todo...">
-      <button type='submit' class="">Submit</button>
-  </form>
-
-
-
-
-
-
-
-<!-- <input [(ngModel)]="newTodotask" #ctrl="ngModel" required>
-<button (click)="createNewTodo(newTodotask)" type='submit' class="">Submit</button> -->
-
-
-
-<!-- <div>
-  <form (ngSubmit)="createNewTodo(newItem.value)">
-    <div class="form-group">
-      <input type ="text" #newItem placeholder="your todo...">
-      <button type='submit' class="">Submit</button>
-    </div>
-  </form>
-</div> -->
 
 
 
