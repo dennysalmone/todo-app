@@ -1,26 +1,40 @@
-<div id="wrapper">
-  <ng-container *ngFor="let task of tempArrayOfTodos; index as x">
-    <div>
-      <span
-      [ngStyle]="toggleStyleCheck(task)">{{task?.title}}</span>
-      <button (click)="deleteTask(task)">DELETE</button>
-      <button (click)="toggleStatus(task)">Toggle</button>
-    </div>
-  </ng-container>
+<div class="wrapper">
+
+<button class='btn indigo darken-1 btn-newfolder' (click)="createCollection()"><i class="material-icons left">create_new_folder</i>New</button>
+
+  <div class="all-containers">
+    <ng-container *ngFor="let cont of collection; index as y">
+      <div class="collection-container">
+        <div id="task-list">
+          <ng-container *ngFor="let task of tempArrayOfTodos; index as x">
+            <ul *ngIf="checkListId(task, cont)" class="collection">
+              <li class="collection-item">
+                <button (click)="deleteTask(task)" class="button-margin btn indigo darken-1"><i class="delete-btn material-icons left">delete_forever</i></button>
+                <button (click)="toggleStatus(task)" class="button-margin btn indigo darken-1"><i class="delete-btn material-icons left">playlist_add_check</i></button>
+                <span class='task-title' [ngStyle]="toggleStyleCheck(task)">{{task?.title}}</span>        
+              </li>
+            </ul>
+          </ng-container>
+        </div>
+        <br>
+      </div>
+    </ng-container>
+  </div>
+ 
+  <div>
+    <form (ngSubmit)="createNewTodo(newTodotask)">
+      <div class="row">
+        <div class="input-field col s8">
+          <input maxlength="170" [(ngModel)]="newTodotask" class="validate" name="first" #ctrl="ngModel" required placeholder="your todo...">
+        </div>
+      </div>
+      <button type='submit' class="btn indigo darken-1"><i class="material-icons left">add</i>Submit</button>
+    </form>
+  </div>
+  
+
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
 </div>
-<br>
 
-<form (ngSubmit)="createNewTodo(newTodotask)">
-  <input [(ngModel)]="newTodotask" name="first" #ctrl="ngModel" required placeholder="your todo...">
-  <button type='submit' class="">Submit</button>
-</form>
-
-
-
-
-<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"> -->
-
-
-
-
-
+<button class="w3-button w3-tiny">а</button>
