@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import { collection, task, taskObj } from './types/types';
+import { collection, task } from './types/types';
+import { CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop'
 
 @Component({
   selector: 'app-root',
@@ -7,16 +8,29 @@ import { collection, task, taskObj } from './types/types';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  title = 'angular-todo-frontend';
+  title = 'angular-todo-frontend'; 
   data: any = 'placeholder';
   newTodotask: string = '';
-  collection: collection[] = [{collectionId:0}, {collectionId:1}, {collectionId:2}, {collectionId:3}];
-  URL: string = `http://localhost:3000/todo`
-  tempArrayOfTodos: task[] = [
-    {id:0, title: "я писить в контейнере 0", status: true, collection: 0},
-    {id:1, title: "а я жеват в контейнере 3", status: false, collection: 3},
-    {id:2, title: "а я какуть в контейнере 5", status: false, collection: 5},
-  ];
+  URL: string = `http://localhost:3000/todo`;
+  URLlist: string = `http://localhost:3000/todo-list`;
+  collection: collection[] = [{
+    name: 'test',
+    collectionId: 0,
+    todos: [
+      {id:0, title: "00000", status: true},
+      {id:1, title: "11111", status: true},
+      {id:2, title: "22222", status: true}
+    ]
+  },
+  { 
+    name: 'test',
+    collectionId: 1,
+    todos: [
+      {id:3, title: "3", status: true},
+      {id:4, title: "4", status: true},
+      {id:5, title: "5", status: true}
+    ]
+  }];
 
   ngOnInit (): void {
     this.serverRequestGet(this.URL)
@@ -28,8 +42,7 @@ export class AppComponent {
       return response.json();
     })
     .then((data) => {
-      this.tempArrayOfTodos = data
-      this.collectionsSetOnLoad()
+      this.collection = data
       console.log(`гет отработал и передал нам ${data}`)
     });
   }
@@ -45,9 +58,31 @@ export class AppComponent {
     return await response.json();
   }
 
-  async serverRequestPut(URL: string, data: task): Promise<any> {
+  // async serverRequestPut(URL: string, data: task): Promise<any> {
+  //   const response = await fetch(URL, {
+  //     method: 'PUT',
+  //     body: JSON.stringify(data),
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //     },
+  //   })
+  //   return await response.json();
+  // }
+
+  async serverPostCollection(URL: string, data: collection): Promise<any> {
     const response = await fetch(URL, {
-      method: 'PUT',
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    return await response.json();
+  }
+
+  async serverDeleteCollection(URL: string, data: collection): Promise<any> {
+    const response = await fetch(URL, {
+      method: 'DELETE',
       body: JSON.stringify(data),
       headers: {
         'Content-Type': 'application/json',
@@ -67,63 +102,52 @@ export class AppComponent {
     return await response.json();
   }
 
-  toggleStyleCheck(todo: task): Object {
-    if(todo?.status) {
-      return {'color': 'black'}
-    } else {
-      return {'text-decoration' : 'line-through', 'color': 'green', 'opacity': '0.25'}
+  foundFreeIndex(): number {
+    let allTasks = this.unboxedCollection()
+    let arrayOfIndexes: Number[] = []
+    for (let i=0; i<allTasks.length; i++) {
+      arrayOfIndexes.push(allTasks[i].id)
     }
-  }
-
-  foundFreeIndex(tempArrayOfTodos: task[]): number {
-    let arrayOfIndexes: any[] = []
-    for (let i=0; i<tempArrayOfTodos.length; i++) {
-      arrayOfIndexes.push(tempArrayOfTodos[i]?.id)
-    }
-    for (let j=0; j<(tempArrayOfTodos.length+5); j++) {
+    for (let j=0; j<(allTasks.length+5); j++) {
       if (!arrayOfIndexes.includes(j)) {
         return j;
       }
     }
-    return tempArrayOfTodos.length+1 
+    return allTasks.length+1 
   }
 
-  deleteTask(todo: task): void {
+  deleteTask(todo: task, i: number): void {
     console.log('удалил тудушку с тексом ', todo?.title);
-    var index = this.tempArrayOfTodos.indexOf(todo);
-    this.tempArrayOfTodos.splice(index, 1);     
+    var index = this.collection[i].todos.indexOf(todo);
+    this.collection[i].todos.splice(index, 1);
     this.serverRequestDelete(this.URL, todo)
   }
 
-  toggleStatus(todo: task): void {
-    console.log(`переключил статус тудушки ${todo?.title} на ${!(todo?.status)}`);
-    (todo as taskObj).status = !(todo as taskObj).status;
-    this.serverRequestPut(this.URL, todo)
+  unboxedCollection(): task[] {
+    let array: task[] = [];
+    for (let i=0; i<this.collection.length; i++) {
+      array = array.concat(this.collection[i].todos)
+    };
+    return array;
   }
 
-  checkListId(todo: task, cont: collection): boolean {
-    if (todo?.collection == cont.collectionId) {
-      return true
-    } else {
-      return false
+  deleteCollection(index: number): void {
+    this.collection.splice(index, 1);
+    this.serverDeleteCollection(this.URLlist, this.collection[index])
+  }
+
+  checkListForDelete(list: collection): boolean {
+    if (list.todos.length > 0) {
+      return false;
     }
+    return true;
   }
 
   createCollection(): void {
     let freeIndex = this.foundFreeIndexForCollection()
-    this.collection.push({collectionId: freeIndex})
-  }
-
-  collectionsSetOnLoad(): void {
-    let todosCollectionIndexes = [];
-    for (let i=0; i<this.tempArrayOfTodos.length; i++) {
-      todosCollectionIndexes.push(this.tempArrayOfTodos[i]?.collection)
-    }
-    let arrayUniqIndexes = (Array.from(new Set(todosCollectionIndexes))).sort() // .sort???? 
-    this.collection = []
-    for (let j=0; j<arrayUniqIndexes.length; j++) {
-      this.collection.push({collectionId: arrayUniqIndexes[j]})
-    }
+    let newCollection = {name: `Collection ${freeIndex}`, collectionId: freeIndex, todos: []}
+    this.collection.push(newCollection)
+    this.serverPostCollection(this.URLlist, newCollection)
   }
 
   foundFreeIndexForCollection(): number {
@@ -133,19 +157,36 @@ export class AppComponent {
     }
     for (let j=0; j<(this.collection.length+5); j++) {
       if (!arrayOfIndexes.includes(j)) {
-        console.log(j)
         return j;
       }
     }
     return this.collection.length+1 
   }
 
+  onDrop(event: CdkDragDrop <task[]>) {
+    console.log (event)
+    if(event.previousContainer === event.container) {
+      moveItemInArray(
+        event.container.data,
+        event.previousIndex,
+        event.currentIndex
+      );
+    } else {
+      transferArrayItem(
+        event.previousContainer.data,
+        event.container.data,
+        event.previousIndex,
+        event.currentIndex
+      );
+    }
+  }
+
   createNewTodo(value: string): void {
-    if (value.split(' ').join('')) {
+    if (value.split(' ').join('') && this.collection.length > 0) {
       console.log(`добавил тудушку с текстом ${value}`)
-      let newTask = {id:this.foundFreeIndex(this.tempArrayOfTodos), title: value, status: true, collection:0}
+      let newTask = {id:this.foundFreeIndex(), title: value, status: true}
       this.serverRequestPost(this.URL, newTask)
-      this.tempArrayOfTodos.push(newTask)
+      this.collection[0].todos.push(newTask)
     }
     this.newTodotask = ''
   }

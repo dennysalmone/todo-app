@@ -1,13 +1,12 @@
-export interface taskObj {
+export type task = {
     id: number;
     title: string;
     status: boolean;
-    collection: number;
-    // user_id: number
 }
 
 export type collection = {
+    name: string;
     collectionId: number;
+    todos: task[];
 }
 
-export type task = taskObj; 
