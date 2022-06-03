@@ -13,6 +13,7 @@ export class AppComponent {
   newTodotask: string = '';
   URL: string = `http://localhost:3000/todo`;
   URLlist: string = `http://localhost:3000/todo-list`;
+  URLChange: string = `http://localhost:3000/change`
   collection: collection[] = [{
     name: 'test',
     collectionId: 0,
@@ -20,15 +21,6 @@ export class AppComponent {
       {id:0, title: "00000", status: true},
       {id:1, title: "11111", status: true},
       {id:2, title: "22222", status: true}
-    ]
-  },
-  { 
-    name: 'test',
-    collectionId: 1,
-    todos: [
-      {id:3, title: "3", status: true},
-      {id:4, title: "4", status: true},
-      {id:5, title: "5", status: true}
     ]
   }];
 
@@ -90,6 +82,17 @@ export class AppComponent {
     })
     return await response.json();
   }
+
+  async serverRequestDragDrop(URL: string, indexes: {}): Promise<any> {
+    const response = await fetch(URL, {
+      method: 'POST',
+      body: JSON.stringify(indexes),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    return await response.json();
+  }
   
   async serverRequestDelete(URL: string, data: task): Promise<any> {
     const response = await fetch(URL, {
@@ -118,9 +121,10 @@ export class AppComponent {
 
   deleteTask(todo: task, i: number): void {
     console.log('удалил тудушку с тексом ', todo?.title);
+    this.serverRequestDelete(this.URL, todo)
     var index = this.collection[i].todos.indexOf(todo);
     this.collection[i].todos.splice(index, 1);
-    this.serverRequestDelete(this.URL, todo)
+
   }
 
   unboxedCollection(): task[] {
@@ -132,8 +136,8 @@ export class AppComponent {
   }
 
   deleteCollection(index: number): void {
-    this.collection.splice(index, 1);
     this.serverDeleteCollection(this.URLlist, this.collection[index])
+    this.collection.splice(index, 1);
   }
 
   checkListForDelete(list: collection): boolean {
@@ -163,8 +167,16 @@ export class AppComponent {
     return this.collection.length+1 
   }
 
-  onDrop(event: CdkDragDrop <task[]>) {
-    console.log (event)
+  onDrop(event: CdkDragDrop <task[]>, collectionId: number) {
+    console.log(event)
+    // let oldCollectionId = function (context: any) {
+    //   for (let i=0; i<context.collection.length; i++) {
+    //     if (context.collection[i].todos == event.container.data) {
+    //       return context.collection[i].collectionId
+    //     }
+    //   }
+    // }
+
     if(event.previousContainer === event.container) {
       moveItemInArray(
         event.container.data,
@@ -179,6 +191,15 @@ export class AppComponent {
         event.currentIndex
       );
     }
+
+    let indexes = {
+      newListCollectionId: collectionId,
+      newTaskIndex: event.currentIndex,
+      todo: event.container.data[event.currentIndex]
+    };
+
+    console.log(indexes)
+    this.serverRequestDragDrop(this.URLChange, indexes)
   }
 
   createNewTodo(value: string): void {

@@ -5,9 +5,9 @@
 <div cdkDropListGroup class="all-containers">
   <ng-container *ngFor="let list of collection; index as y">
     <div id="{{list.collectionId}}" class="collection-container">
-      <button *ngIf="checkListForDelete(list)" (click)="deleteCollection(y)" class="waves-effect waves-light btn-large indigo darken-1">delete list</button>
+      <button *ngIf="checkListForDelete(list)" (click)="deleteCollection(y)" class="waves-effect waves-light btn-large indigo darken-1">delete {{list.name}}</button>
       <div cdkDropList 
-      (cdkDropListDropped)="onDrop($event)"
+      (cdkDropListDropped)="onDrop($event, list.collectionId)"
       [cdkDropListData]="list.todos"
       class="task-list">
         <ng-container *ngFor="let task of list.todos; index as x">

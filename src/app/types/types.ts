@@ -9,4 +9,3 @@ export type collection = {
     collectionId: number;
     todos: task[];
 }
-
