@@ -1,0 +1,44 @@
+<p>Тут должны находиться все тудушки после авторизации. Если этот текст виден без авторизации, поздравляю, что-то пошло не так!</p>
+
+<div class="wrapper">
+
+    <button class='btn indigo darken-1 btn-newfolder' (click)="createCollection()"><i class="material-icons left">create_new_folder</i>New</button>
+    
+    <div cdkDropListGroup class="all-containers">
+      <ng-container *ngFor="let list of collection; index as y">
+        <div id="{{list.collectionId}}" class="collection-container">
+          <button *ngIf="checkListForDelete(list)" (click)="deleteCollection(y)" class="waves-effect waves-light btn-large indigo darken-1">delete {{list.name}}</button>
+          <div cdkDropList 
+          (cdkDropListDropped)="onDrop($event, list.collectionId)"
+          [cdkDropListData]="list.todos"
+          class="task-list">
+            <ng-container *ngFor="let task of list.todos; index as x">
+              <ul cdkDrag class="collection">
+                <li class="collection-item">
+                  <button (click)="deleteTask(task, y)" class="button-margin btn indigo darken-1"><i class="delete-btn material-icons left">delete_forever</i></button>
+                  <span class='task-title'>{{task?.title}}</span>
+                </li>
+              </ul>
+            </ng-container>
+          </div>
+          <br>
+        </div>
+      </ng-container>
+    </div>
+     
+      <div>
+        <form (ngSubmit)="createNewTodo(newTodotask)">
+          <div class="row">
+            <div class="input-field col s8">
+              <input maxlength="170" [(ngModel)]="newTodotask" class="validate" name="first" #ctrl="ngModel" required placeholder="your todo...">
+            </div>
+          </div>
+          <button type='submit' class="btn indigo darken-1"><i class="material-icons left">add</i>Submit</button>
+        </form>
+      </div>
+      
+    
+      <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    </div>
+    
