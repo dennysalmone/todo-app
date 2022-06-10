@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, OnInit } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { User } from "src/app/types/interfaces";
 import { Observable } from "rxjs";
@@ -24,6 +24,7 @@ export class AuthService {
                 ({token}) => {
                     localStorage.setItem('authToken', token)
                     this.setToken(token)
+                    this.setTokenFromLocalStorage()
                 }
             )
         )
@@ -39,12 +40,10 @@ export class AuthService {
 
     setTokenFromLocalStorage() {
         this.token = (localStorage.getItem('authToken') as string);
+        console.log('setTokenFromLocalStorage')
     }
 
     isAuthenticated(): boolean {
-        if(!this.token && localStorage.getItem('authToken')) {
-            this.setTokenFromLocalStorage()
-        }
         return !!this.token;
     }
 

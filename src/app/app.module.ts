@@ -14,6 +14,7 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthService } from './shared/services/auth.service';
 import { TokenInterceptor } from './shared/classes/token.interceptor';
 import { TodosPageComponent } from './todos-page/todos-page.component';
+import { TodosService } from './shared/services/todos.service';
 
 @NgModule({
   declarations: [
@@ -36,10 +37,11 @@ import { TodosPageComponent } from './todos-page/todos-page.component';
   ],
   providers: [
     AuthService,
+    TodosService,
     {
       provide: HTTP_INTERCEPTORS,
-      multi: true,
-      useClass: TokenInterceptor
+      useClass: TokenInterceptor,
+      multi: true
     }
   ],
   bootstrap: [AppComponent]

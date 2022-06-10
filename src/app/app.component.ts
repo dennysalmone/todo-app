@@ -13,10 +13,11 @@ export class AppComponent {
   }
 
   ngOnInit (): void {
-    let potetntialToken = localStorage.getItem('auth-token')
-    if (potetntialToken !== null) {
-      this.auth.setToken(potetntialToken)
-    }
+    // let potetntialToken = localStorage.getItem('auth-token')
+    // if (potetntialToken !== null) {
+    //   this.auth.setToken(potetntialToken)
+    // }
+    this.auth.setTokenFromLocalStorage()
   }  
 
 }
