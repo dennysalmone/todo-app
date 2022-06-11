@@ -33,7 +33,7 @@ export class TodosService {
     }
 
     deleteTodo(data: task): Observable<any> {
-        return this.http.delete<task>(`${environment.URL}todo`, {body: data})
+        return this.http.delete<task>(`${environment.URL}todo-delete`, {body: data})
     }
 
 }

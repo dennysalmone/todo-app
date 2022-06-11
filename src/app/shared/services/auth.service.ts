@@ -39,7 +39,9 @@ export class AuthService {
     }
 
     setTokenFromLocalStorage() {
-        this.token = (localStorage.getItem('authToken') as string);
+        if (localStorage.getItem('authToken')) {
+            this.token = (localStorage.getItem('authToken') as string);
+        }
         console.log('setTokenFromLocalStorage')
     }
 
