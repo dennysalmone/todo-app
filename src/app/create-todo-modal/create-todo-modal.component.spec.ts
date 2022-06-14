@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { RegisterPageComponent } from './register-page.component';
+import { CreateTodoModalComponent } from './create-todo-modal.component';
 
-describe('RegisterPageComponent', () => {
-  let component: RegisterPageComponent;
-  let fixture: ComponentFixture<RegisterPageComponent>;
+describe('CreateTodoModalComponent', () => {
+  let component: CreateTodoModalComponent;
+  let fixture: ComponentFixture<CreateTodoModalComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ RegisterPageComponent ]
+      declarations: [ CreateTodoModalComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(RegisterPageComponent);
+    fixture = TestBed.createComponent(CreateTodoModalComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

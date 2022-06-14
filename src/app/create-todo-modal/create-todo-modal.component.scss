@@ -1,0 +1,23 @@
+.backdrop-modal-window {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    top: 0;
+    left: 0;
+}
+
+.modal-window {
+    padding: 1rem;
+    background-color: aliceblue;
+    border-radius: 5px;
+    margin-top: 12%;
+    position: absolute;
+    width: 50vw;
+    left: 50%;
+    transform: translate(-50%, 0);
+}
+
+.close-btn {
+    margin-top: 5px;
+}

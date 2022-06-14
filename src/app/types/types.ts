@@ -6,6 +6,7 @@ export type task = {
 
 export type collection = {
     name: string;
+    desc: string;
     collectionId: number;
     todos: task[];
 }

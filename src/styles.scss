@@ -33,9 +33,9 @@ $angular-todo-frontend-theme: mat.define-light-theme((
 // that you are using.
 @include mat.all-component-themes($angular-todo-frontend-theme);
 
-body {
-    background-image: url("backcover.png");
-    background-size: cover;
+.mat-typography {
+  background: url('https://a.travel-assets.com/findyours-php/viewfinder/images/res70/74000/74196-Utah.jpg');
+  background-size: cover;
 }
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

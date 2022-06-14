@@ -1,10 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { collection, task } from '../types/types';
 import { CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop'
 import { TodosService } from '../shared/services/todos.service';
 import { MaterialService } from '../shared/classes/material.service';
 import { environment } from 'src/environments/environment';
-
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { CreateTodolistModalComponent } from '../create-todolist-modal/create-todolist-modal.component';
+import { CreateTodoModalComponent } from '../create-todo-modal/create-todo-modal.component';
 
 @Component({
   selector: 'app-todos-page',
@@ -14,12 +16,14 @@ import { environment } from 'src/environments/environment';
 
 export class TodosPageComponent implements OnInit {
   aSub: any;
+  dialogSub: any;
+  dialogTodoSub: any;
   title = 'angular-todo-frontend'; 
   data: any = 'placeholder';
-  newTodotask: string = '';
+  newTodotask: any = '';
   URL: string = `${environment.URL}todo`;
   collection: collection[] = [];
-  constructor(private todoService: TodosService) {
+  constructor(private todoService: TodosService, private dialog: MatDialog) {
 
   }
 
@@ -35,7 +39,6 @@ export class TodosPageComponent implements OnInit {
       }
     })
   }
-
 
   serverPostCollection(data: collection) {
     this.aSub = this.todoService.postTodoList(data).subscribe({
@@ -53,8 +56,9 @@ export class TodosPageComponent implements OnInit {
     })
   }
 
-  serverRequestPost(data: task) {
-    this.aSub = this.todoService.postTodo(data).subscribe({
+  serverRequestPost(data: task, collId: object) {
+    var obj = Object.assign(data, collId);
+    this.aSub = this.todoService.postTodo(obj).subscribe({
       error: (e) => {
         MaterialService.toast(e.error.message)
       }
@@ -76,8 +80,6 @@ export class TodosPageComponent implements OnInit {
       }
     })
   }
-
-
 
   foundFreeIndex(): number {
     let allTasks = this.unboxedCollection()
@@ -114,16 +116,35 @@ export class TodosPageComponent implements OnInit {
     this.collection.splice(index, 1);
   }
 
-  checkListForDelete(list: collection): boolean {
-    if (list.todos.length > 0) {
-      return false;
-    }
-    return true;
+  openDialogTodo(collId: number, index: number): void {
+    this.dialogTodoSub = this.todoService.newTodo$.subscribe(
+      (data) => {
+        this.dialogTodoSub.unsubscribe()
+        this.createNewTodo(collId, index, data)
+      }
+  )
+  const dialogConfig = new MatDialogConfig();
+  dialogConfig.disableClose = true;
+  dialogConfig.autoFocus = true;
+  this.dialog.open(CreateTodoModalComponent, dialogConfig)
   }
 
-  createCollection(): void {
+  openDialogList(): void {
+    this.dialogSub = this.todoService.newTodoList$.subscribe(
+        (data) => {
+          this.dialogSub.unsubscribe()
+          this.createCollection(data)
+        }
+    )
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    this.dialog.open(CreateTodolistModalComponent, dialogConfig)
+  }
+
+  createCollection(data: any): void {
     let freeIndex = this.foundFreeIndexForCollection()
-    let newCollection = {name: `Collection ${freeIndex}`, collectionId: freeIndex, todos: []}
+    let newCollection = {name: data.name, desc: data.desc, collectionId: freeIndex, todos: []}
     this.collection.push(newCollection)
     this.serverPostCollection(newCollection)
   }
@@ -166,12 +187,12 @@ export class TodosPageComponent implements OnInit {
     this.serverRequestDragDrop(indexes)
   }
 
-  createNewTodo(value: string): void {
-    if (value.split(' ').join('') && this.collection.length > 0) {
-      console.log(`добавил тудушку с текстом ${value}`)
-      let newTask = {id:this.foundFreeIndex(), title: value, status: true}
-      this.serverRequestPost(newTask)
-      this.collection[0].todos.push(newTask)
+  createNewTodo(collId: number, index: number, data: any): void {
+    if (data.title && this.collection.length > 0) {
+      console.log(`добавил тудушку с текстом ${data.title}`)
+      let newTask = {id:this.foundFreeIndex(), title: data.title, status: true}
+      this.serverRequestPost(newTask, {collId: collId})
+      this.collection[index].todos.push(newTask)
     }
     this.newTodotask = ''
   }
