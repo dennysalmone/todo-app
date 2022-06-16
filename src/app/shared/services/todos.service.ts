@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Observable, Subject } from "rxjs";
-import { collection, task } from "src/app/types/types";
+import { TodoList, Task } from "src/app/types/types";
 import { environment } from 'src/environments/environment';
 
 @Injectable()
@@ -12,31 +12,31 @@ export class TodosService {
 
     }
 
-    newTodo$ = new Subject()
-    newTodoList$ = new Subject()
+    todoCreated$ = new Subject()
+    todoListCreated$ = new Subject()
 
     getTodos(): Observable<any> {
-        return this.http.get<collection>(`${environment.URL}todo`)
+        return this.http.get<TodoList>(`${environment.URL}todo`)
     }
 
-    postTodoList(data: collection): Observable<any> {
-        return this.http.post<collection>(`${environment.URL}todo-list`, data)
+    createTodoList(data: TodoList): Observable<any> {
+        return this.http.post<TodoList>(`${environment.URL}todo-list`, data)
     }
 
-    deleteTodoList(data: collection): Observable<any> {
-        return this.http.delete<collection>(`${environment.URL}todo-list`, {body: data})
+    deleteTodoList(data: TodoList): Observable<any> {
+        return this.http.delete<TodoList>(`${environment.URL}todo-list`, {body: data})
     }
 
-    postTodo(data: object): Observable<any> {
-        return this.http.post<task>(`${environment.URL}todo`, data)
+    createTodo(data: object): Observable<any> {
+        return this.http.post<Task>(`${environment.URL}todo`, data)
     }
 
     changeTodo(data: {}): Observable<any> {
-        return this.http.post<task>(`${environment.URL}change`, data)
+        return this.http.post<Task>(`${environment.URL}change`, data)
     }
 
-    deleteTodo(data: task): Observable<any> {
-        return this.http.delete<task>(`${environment.URL}todo-delete`, {body: data})
+    deleteTodo(data: Task): Observable<any> {
+        return this.http.delete<Task>(`${environment.URL}todo-delete`, {body: data})
     }
 
 }

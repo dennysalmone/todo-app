@@ -1,12 +1,12 @@
-export type task = {
+export type Task = {
     id: number;
     title: string;
     status: boolean;
 }
 
-export type collection = {
+export type TodoList = {
     name: string;
     desc: string;
     collectionId: number;
-    todos: task[];
+    todos: Task[];
 }

@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { collection, task } from '../types/types';
+import { TodoList, Task } from '../types/types';
 import { CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop'
 import { TodosService } from '../shared/services/todos.service';
 import { MaterialService } from '../shared/classes/material.service';
@@ -7,6 +7,7 @@ import { environment } from 'src/environments/environment';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { CreateTodolistModalComponent } from '../create-todolist-modal/create-todolist-modal.component';
 import { CreateTodoModalComponent } from '../create-todo-modal/create-todo-modal.component';
+import { Subscription } from 'rxjs/internal/Subscription';
 
 @Component({
   selector: 'app-todos-page',
@@ -15,14 +16,13 @@ import { CreateTodoModalComponent } from '../create-todo-modal/create-todo-modal
 })
 
 export class TodosPageComponent implements OnInit {
-  aSub: any;
-  dialogSub: any;
-  dialogTodoSub: any;
+  aSub!: Subscription;
+  dialogSub!: Subscription;
+  dialogTodoSub!: Subscription;
   title = 'angular-todo-frontend'; 
-  data: any = 'placeholder';
-  newTodotask: any = '';
+  newTodotask: string = '';
   URL: string = `${environment.URL}todo`;
-  collection: collection[] = [];
+  collection: TodoList[] = [];
   constructor(private todoService: TodosService, private dialog: MatDialog) {
 
   }
@@ -40,33 +40,50 @@ export class TodosPageComponent implements OnInit {
     })
   }
 
-  serverPostCollection(data: collection) {
-    this.aSub = this.todoService.postTodoList(data).subscribe({
+  serverPostTodoList(data: object) { // post list
+    let list = (data as any)
+    const newCollection = {name: list.name, desc: list.desc, collectionId: 0, todos: []}
+    this.aSub = this.todoService.createTodoList(newCollection).subscribe({
+      next: (v) => {
+        this.collection.push({name: v.name, desc: v.desc, collectionId: v.collectionId, todos: []})
+      },
       error: (e) => {
         MaterialService.toast(e.error.message)
       }
     })
   }
 
-  serverDeleteCollection(data: collection) {
+  serverDeleteCollection(index: number) { // delete list
+    let data = (this.collection[index])
     this.aSub = this.todoService.deleteTodoList(data).subscribe({
+      next: () => {
+        this.collection.splice(index, 1);
+      },
       error: (e) => {
         MaterialService.toast(e.error.message)
       }
     })
   }
 
-  serverRequestPost(data: task, collId: object) {
-    var obj = Object.assign(data, collId);
-    this.aSub = this.todoService.postTodo(obj).subscribe({
+  serverRequestPost(task: object, collId: number, index: number) { // post task
+    const arr = [task, collId]
+    this.aSub = this.todoService.createTodo(arr).subscribe({
+      next: (v) => {
+        const newTask = {id: v.id, title: v.title, status: v.status}
+        this.collection[index].todos.push(newTask)
+      },
       error: (e) => {
         MaterialService.toast(e.error.message)
       }
     })
   }
 
-  serverRequestDelete(data: task) {
-    this.aSub = this.todoService.deleteTodo(data).subscribe({
+  serverRequestDelete(task: Task, i: number) { // delete task
+    this.aSub = this.todoService.deleteTodo(task).subscribe({
+      next: () => {
+        const index = this.collection[i].todos.indexOf(task);
+        this.collection[i].todos.splice(index, 1);
+      },
       error: (e) => {
         MaterialService.toast(e.error.message)
       }
@@ -75,52 +92,19 @@ export class TodosPageComponent implements OnInit {
   
   serverRequestDragDrop(data: {}) {
     this.aSub = this.todoService.changeTodo(data).subscribe({
+      next: (v) => {},
       error: (e) => {
         MaterialService.toast(e.error.message)
       }
     })
   }
 
-  foundFreeIndex(): number {
-    let allTasks = this.unboxedCollection()
-    let arrayOfIndexes: Number[] = []
-    for (let i=0; i<allTasks.length; i++) {
-      arrayOfIndexes.push(allTasks[i].id)
-    }
-    for (let j=0; j<(allTasks.length+5); j++) {
-      if (!arrayOfIndexes.includes(j)) {
-        return j;
-      }
-    }
-    return allTasks.length+1 
-  }
-
-  deleteTask(todo: task, i: number): void {
-    console.log('удалил тудушку с тексом ', todo?.title);
-    this.serverRequestDelete(todo)
-    var index = this.collection[i].todos.indexOf(todo);
-    this.collection[i].todos.splice(index, 1);
-
-  }
-
-  unboxedCollection(): task[] {
-    let array: task[] = [];
-    for (let i=0; i<this.collection.length; i++) {
-      array = array.concat(this.collection[i].todos)
-    };
-    return array;
-  }
-
-  deleteCollection(index: number): void {
-    this.serverDeleteCollection(this.collection[index])
-    this.collection.splice(index, 1);
-  }
-
-  openDialogTodo(collId: number, index: number): void {
-    this.dialogTodoSub = this.todoService.newTodo$.subscribe(
+  openTodoDialog(collId: number, index: number): void {
+    this.dialogTodoSub = this.todoService.todoCreated$.subscribe(
       (data) => {
         this.dialogTodoSub.unsubscribe()
-        this.createNewTodo(collId, index, data)
+        let task = (data as object)
+        this.serverRequestPost(task, collId, index)
       }
   )
   const dialogConfig = new MatDialogConfig();
@@ -129,11 +113,11 @@ export class TodosPageComponent implements OnInit {
   this.dialog.open(CreateTodoModalComponent, dialogConfig)
   }
 
-  openDialogList(): void {
-    this.dialogSub = this.todoService.newTodoList$.subscribe(
+  openListDialog(): void {
+    this.dialogSub = this.todoService.todoListCreated$.subscribe(
         (data) => {
           this.dialogSub.unsubscribe()
-          this.createCollection(data)
+          this.serverPostTodoList(data as object)
         }
     )
     const dialogConfig = new MatDialogConfig();
@@ -142,27 +126,18 @@ export class TodosPageComponent implements OnInit {
     this.dialog.open(CreateTodolistModalComponent, dialogConfig)
   }
 
-  createCollection(data: any): void {
-    let freeIndex = this.foundFreeIndexForCollection()
-    let newCollection = {name: data.name, desc: data.desc, collectionId: freeIndex, todos: []}
-    this.collection.push(newCollection)
-    this.serverPostCollection(newCollection)
-  }
 
-  foundFreeIndexForCollection(): number {
-    let arrayOfIndexes: any[] = []
-    for (let i=0; i<this.collection.length; i++) {
-      arrayOfIndexes.push(this.collection[i]?.collectionId)
-    }
-    for (let j=0; j<(this.collection.length+5); j++) {
-      if (!arrayOfIndexes.includes(j)) {
-        return j;
-      }
-    }
-    return this.collection.length+1 
-  }
+  // createNewTodo(collId: number, index: number, data: Task): void {
+  //   if (data.title && this.collection.length) {
+  //     console.log(`добавил тудушку с текстом ${data.title}`)
+  //     const newTask = {id:123456789, title: data.title, status: true}
+  //     this.serverRequestPost(newTask, collId)
+  //     this.collection[index].todos.push(newTask)
+  //   }
+  //   this.newTodotask = ''
+  // }
 
-  onDrop(event: CdkDragDrop <task[]>, collectionId: number) {
+  onDrop(event: CdkDragDrop <Task[]>, collectionId: number) {
     if(event.previousContainer === event.container) {
       moveItemInArray(
         event.container.data,
@@ -187,14 +162,5 @@ export class TodosPageComponent implements OnInit {
     this.serverRequestDragDrop(indexes)
   }
 
-  createNewTodo(collId: number, index: number, data: any): void {
-    if (data.title && this.collection.length > 0) {
-      console.log(`добавил тудушку с текстом ${data.title}`)
-      let newTask = {id:this.foundFreeIndex(), title: data.title, status: true}
-      this.serverRequestPost(newTask, {collId: collId})
-      this.collection[index].todos.push(newTask)
-    }
-    this.newTodotask = ''
-  }
 }
 

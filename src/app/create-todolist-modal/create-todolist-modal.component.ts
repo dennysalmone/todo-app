@@ -22,9 +22,9 @@ export class CreateTodolistModalComponent implements OnInit {
     })
   }
 
-  submit() {
+  onSubmit() {
     console.log('submit')
-    this.todoService.newTodoList$.next(this.form.value)
+    this.todoService.todoListCreated$.next(this.form.value)
     this.close();
   }
 
@@ -32,13 +32,4 @@ export class CreateTodolistModalComponent implements OnInit {
     console.log('close')
     this.dialogRef.close();
   }
-
-  // checkInputs(): boolean {
-  //   if(this.form.value.name && this.form.value.desc) {
-  //     return false;
-  //   } else {
-  //     return true;
-  //   }
-  // }
-
 }

@@ -21,9 +21,9 @@ export class CreateTodoModalComponent implements OnInit {
     })
   }
 
-  submit() {
+  onSubmit() {
     console.log('submit')
-    this.todoService.newTodo$.next(this.form.value)
+    this.todoService.todoCreated$.next(this.form.value)
     this.close();
   }
 
