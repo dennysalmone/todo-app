@@ -15,6 +15,9 @@ import { AuthService } from './shared/services/auth.service';
 import { TokenInterceptor } from './shared/classes/token.interceptor';
 import { TodosPageComponent } from './todos-page/todos-page.component';
 import { TodosService } from './shared/services/todos.service';
+import { CreateTodolistModalComponent } from './create-todolist-modal/create-todolist-modal.component';
+import { MatDialogModule } from '@angular/material/dialog';
+import { CreateTodoModalComponent } from './create-todo-modal/create-todo-modal.component';
 
 @NgModule({
   declarations: [
@@ -24,6 +27,8 @@ import { TodosService } from './shared/services/todos.service';
     SiteLayoutComponent,
     RegisterPageComponent,
     TodosPageComponent,
+    CreateTodolistModalComponent,
+    CreateTodoModalComponent,
   ],
   imports: [
     BrowserModule,
@@ -33,7 +38,8 @@ import { TodosService } from './shared/services/todos.service';
     AppRoutingModule,
     FormsModule,
     ReactiveFormsModule,
-    HttpClientModule
+    HttpClientModule,
+    MatDialogModule
   ],
   providers: [
     AuthService,
@@ -44,6 +50,7 @@ import { TodosService } from './shared/services/todos.service';
       multi: true
     }
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  entryComponents: [CreateTodolistModalComponent]
 })
 export class AppModule { }

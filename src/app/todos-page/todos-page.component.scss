@@ -15,6 +15,52 @@
     margin-right: auto;
 }
 
+.add-item-png {
+    padding: 3px;
+    width: 25px;
+    height: 25px;
+    margin: 3px;
+    position: relative;
+    float: right;
+    cursor: pointer;
+    content: url(add_item.png);
+}
+
+.header-text {
+    font-size: 20px;
+    margin: 5px;
+}
+
+.header-block {
+    display: flex;
+    justify-content: space-between;
+}
+
+.delete-png {
+    padding: 3px;
+    width: 25px;
+    height: 25px;
+    margin: 0 0 0 auto;
+    cursor: pointer;
+    content: url(delete.png);
+}
+
+.delete-folder-png {
+    padding: 3px;
+    width: 38px;
+    height: 27px;
+    margin: 2px;
+    cursor: pointer;
+    content: url(delete_folder.png);
+}
+
+
+.delete-png :hover {
+    opacity: 0.5;
+    background-color: pink;
+    text-decoration: underline;
+}
+
 
 .task-title {
     font-size: 16px;
@@ -25,7 +71,7 @@
 }
 
 .collection .collection-item {
-    padding: 2px;
+    padding: 3px 3px 3px 6px;
 }
 
 .collection {
