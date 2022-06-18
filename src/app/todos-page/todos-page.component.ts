@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { TodoList, Task } from '../types/types';
+import { TodoList, Task, Board } from '../types/types';
 import { CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop'
 import { TodosService } from '../shared/services/todos.service';
 import { MaterialService } from '../shared/classes/material.service';
@@ -8,6 +8,7 @@ import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { CreateTodolistModalComponent } from '../create-todolist-modal/create-todolist-modal.component';
 import { CreateTodoModalComponent } from '../create-todo-modal/create-todo-modal.component';
 import { Subscription } from 'rxjs/internal/Subscription';
+import { CreateBoardModalComponent } from '../create-board-modal/create-board-modal.component';
 
 @Component({
   selector: 'app-todos-page',
@@ -17,23 +18,27 @@ import { Subscription } from 'rxjs/internal/Subscription';
 
 export class TodosPageComponent implements OnInit {
   aSub!: Subscription;
+  bSub!: Subscription;
   dialogSub!: Subscription;
   dialogTodoSub!: Subscription;
-  title = 'angular-todo-frontend'; 
+  dialogBoardSub!: Subscription;
   newTodotask: string = '';
+  choisedBoard: number = 0;
   URL: string = `${environment.URL}todo`;
-  collection: TodoList[] = [];
+  boards: Board[] = []
+  
   constructor(private todoService: TodosService, private dialog: MatDialog) {
 
   }
 
   ngOnInit (): void {
-    this.serverRequestGet()
+    this.serverBoardsGet()
   }
 
-  serverRequestGet() {
-    this.aSub = this.todoService.getTodos().subscribe({
-      next: (v) => {this.collection = v},
+
+  serverBoardsGet() {
+    this.bSub = this.todoService.getBoards().subscribe({
+      next: (v) => {this.boards = v},
       error: (e) => {
         MaterialService.toast(e.error.message)
       }
@@ -42,10 +47,11 @@ export class TodosPageComponent implements OnInit {
 
   serverPostTodoList(data: object) { // post list
     let list = (data as any)
-    const newCollection = {name: list.name, desc: list.desc, collectionId: 0, todos: []}
-    this.aSub = this.todoService.createTodoList(newCollection).subscribe({
+    let boardForCreate = this.boards[this.choisedBoard]
+    const newTodoList = [{name: list.name, desc: list.desc, collectionId: 0, todos: []}, {boardId: boardForCreate.id}]
+    this.aSub = this.todoService.createTodoList(newTodoList).subscribe({
       next: (v) => {
-        this.collection.push({name: v.name, desc: v.desc, collectionId: v.collectionId, todos: []})
+        boardForCreate.lists.push({name: v.name, desc: v.desc, collectionId: v.collectionId, todos: []})
       },
       error: (e) => {
         MaterialService.toast(e.error.message)
@@ -53,11 +59,24 @@ export class TodosPageComponent implements OnInit {
     })
   }
 
-  serverDeleteCollection(index: number) { // delete list
-    let data = (this.collection[index])
+  serverPostBoard(data: object) { // post board
+    let board = (data as any)
+    const newBoard = {name: board.name, id: 0, author: '', acess: '', lists: []}
+    this.aSub = this.todoService.createBoard(newBoard as any).subscribe({
+      next: (v) => {
+        this.boards.push(v)
+      },
+      error: (e) => {
+        MaterialService.toast(e.error.message)
+      }
+    })
+  }
+
+  serverDeleteCollection(index: number, b: number, boardid: number) { // delete list
+    let data = [this.boards[b].lists[index], {boardid: boardid}]
     this.aSub = this.todoService.deleteTodoList(data).subscribe({
       next: () => {
-        this.collection.splice(index, 1);
+        this.boards[b].lists.splice(index, 1);
       },
       error: (e) => {
         MaterialService.toast(e.error.message)
@@ -65,12 +84,13 @@ export class TodosPageComponent implements OnInit {
     })
   }
 
-  serverRequestPost(task: object, collId: number, index: number) { // post task
-    const arr = [task, collId]
+  serverRequestPost(task: object, collId: number, collIndex: number, boardId: number, boardIndex: number) { // post task
+
+    const arr = [task, {collId: collId}, {boardId: boardId}]
     this.aSub = this.todoService.createTodo(arr).subscribe({
       next: (v) => {
         const newTask = {id: v.id, title: v.title, status: v.status}
-        this.collection[index].todos.push(newTask)
+        this.boards[boardIndex].lists[collIndex].todos.push(newTask)
       },
       error: (e) => {
         MaterialService.toast(e.error.message)
@@ -78,11 +98,12 @@ export class TodosPageComponent implements OnInit {
     })
   }
 
-  serverRequestDelete(task: Task, i: number) { // delete task
-    this.aSub = this.todoService.deleteTodo(task).subscribe({
+  serverRequestDelete(task: Task, collId: number, collIndex: number, boardId: number, boardIndex: number) { // delete task
+    const arr = [{task: task}, {collId: collId}, {boardId: boardId}]
+    this.aSub = this.todoService.deleteTodo(arr).subscribe({
       next: () => {
-        const index = this.collection[i].todos.indexOf(task);
-        this.collection[i].todos.splice(index, 1);
+        const index = this.boards[boardIndex].lists[collIndex].todos.indexOf(task);
+        this.boards[boardIndex].lists[collIndex].todos.splice(index, 1);
       },
       error: (e) => {
         MaterialService.toast(e.error.message)
@@ -99,12 +120,12 @@ export class TodosPageComponent implements OnInit {
     })
   }
 
-  openTodoDialog(collId: number, index: number): void {
+  openTodoDialog(collId: number, collIndex: number, boardId: number, boardIndex: number): void {
     this.dialogTodoSub = this.todoService.todoCreated$.subscribe(
       (data) => {
         this.dialogTodoSub.unsubscribe()
         let task = (data as object)
-        this.serverRequestPost(task, collId, index)
+        this.serverRequestPost(task, collId, collIndex, boardId, boardIndex)
       }
   )
   const dialogConfig = new MatDialogConfig();
@@ -126,16 +147,33 @@ export class TodosPageComponent implements OnInit {
     this.dialog.open(CreateTodolistModalComponent, dialogConfig)
   }
 
+  openBoardDialog (): void {
+    this.dialogBoardSub = this.todoService.boardCreated$.subscribe(
+        (data) => {
+          this.dialogBoardSub.unsubscribe()
+          this.serverPostBoard(data as object)
+        }
+    )
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    this.dialog.open(CreateBoardModalComponent, dialogConfig)
+  }
 
-  // createNewTodo(collId: number, index: number, data: Task): void {
-  //   if (data.title && this.collection.length) {
-  //     console.log(`добавил тудушку с текстом ${data.title}`)
-  //     const newTask = {id:123456789, title: data.title, status: true}
-  //     this.serverRequestPost(newTask, collId)
-  //     this.collection[index].todos.push(newTask)
-  //   }
-  //   this.newTodotask = ''
-  // }
+  selectBoard(index: number) {
+    this.choisedBoard = index;
+  }
+
+  checkSelectedBoard(index: number) {
+    return this.choisedBoard === index;
+  }
+
+  currentBoardCheck(index: number) {
+    if(this.choisedBoard === index) {
+      return true;
+    }
+    return false;
+  }
 
   onDrop(event: CdkDragDrop <Task[]>, collectionId: number) {
     if(event.previousContainer === event.container) {
@@ -152,14 +190,13 @@ export class TodosPageComponent implements OnInit {
         event.currentIndex
       );
     }
-
-    let indexes = {
+    let data = {
       newListCollectionId: collectionId,
       newTaskIndex: event.currentIndex,
-      todo: event.container.data[event.currentIndex]
+      todo: event.container.data[event.currentIndex],
+      boardId: this.boards[this.choisedBoard].id,
     };
-
-    this.serverRequestDragDrop(indexes)
+    this.serverRequestDragDrop(data)
   }
 
 }

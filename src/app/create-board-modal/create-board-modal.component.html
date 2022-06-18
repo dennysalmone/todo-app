@@ -1,0 +1,18 @@
+<div class="backdrop-modal-window">
+    <div class="modal-window">
+        <div>
+            <form 
+            [formGroup]="form"
+            (ngSubmit)="onSubmit()">
+              <div class="row">
+                <div class="input-field col s12">
+                    <input maxlength="170" formControlName="name" class="validate" required placeholder="your board name...">
+                </div>
+              </div>
+              <button [disabled]="form.invalid" class="btn indigo darken-1 close-btn">Submit</button> 
+            </form>
+            <button (click)="close()" class="btn indigo darken-1 close-btn">Close</button>
+          </div>
+    </div>
+</div>
+
