@@ -31,7 +31,7 @@
     </ng-container>
   </div>  
 </div>
-     
+      
 <div class="block-boards">
   <ng-container *ngFor="let board of boards; index as z">
     <div (click)="selectBoard(z)" class="board-element" [ngClass]="{'current-board' : currentBoardCheck(z)}">
