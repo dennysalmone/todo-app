@@ -4,31 +4,31 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { TodosService } from '../shared/services/todos.service';
 
 @Component({
-  selector: 'app-create-todo-modal',
-  templateUrl: './create-todo-modal.component.html',
-  styleUrls: ['./create-todo-modal.component.scss']
+  selector: 'app-create-board-modal',
+  templateUrl: './create-board-modal.component.html',
+  styleUrls: ['./create-board-modal.component.scss']
 })
-export class CreateTodoModalComponent implements OnInit {
+
+export class CreateBoardModalComponent implements OnInit {
 
   form!: FormGroup;
   
-  constructor(private dialogRef: MatDialogRef<CreateTodoModalComponent>, private todoService: TodosService) { }
+  constructor(private dialogRef: MatDialogRef<CreateBoardModalComponent>, private todoService: TodosService) { }
 
   ngOnInit(): void {
     this.form = new FormGroup({
-      title: new FormControl(null, [Validators.required])
+      name: new FormControl(null, [Validators.required])
     })
   }
 
   onSubmit() {
     console.log('submit')
-    this.todoService.todoCreated$.next(this.form.value)
+    this.todoService.boardCreated$.next(this.form.value)
     this.close();
   }
-
+ 
   close() {
     console.log('close')
     this.dialogRef.close();
   }
-
 }

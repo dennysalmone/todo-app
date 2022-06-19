@@ -14,7 +14,6 @@ export class TokenInterceptor implements HttpInterceptor {
     }
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         let token = this.auth.getToken()
-        console.log('interceptor!!!')
         if(token) {
             req = req.clone({
                 setHeaders: {

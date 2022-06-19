@@ -27,7 +27,7 @@ export class CreateTodolistModalComponent implements OnInit {
     this.todoService.todoListCreated$.next(this.form.value)
     this.close();
   }
-
+ 
   close() {
     console.log('close')
     this.dialogRef.close();

@@ -18,6 +18,7 @@ import { TodosService } from './shared/services/todos.service';
 import { CreateTodolistModalComponent } from './create-todolist-modal/create-todolist-modal.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { CreateTodoModalComponent } from './create-todo-modal/create-todo-modal.component';
+import { CreateBoardModalComponent } from './create-board-modal/create-board-modal.component';
 
 @NgModule({
   declarations: [
@@ -29,6 +30,7 @@ import { CreateTodoModalComponent } from './create-todo-modal/create-todo-modal.
     TodosPageComponent,
     CreateTodolistModalComponent,
     CreateTodoModalComponent,
+    CreateBoardModalComponent,
   ],
   imports: [
     BrowserModule,
