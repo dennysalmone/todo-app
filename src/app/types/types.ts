@@ -19,4 +19,40 @@ export type Board = {
     lists: TodoList[]
 }
 
-export type Index = number
+export type DeleteTodo = {
+    id: number;
+    title: string;
+    status: boolean;
+    collId: number;
+    boardId: number;
+}
+
+export type PostTodo = {
+    title: string;
+    collId: number;
+    boardId: number;
+}
+
+export type DragAndDropTodo = {
+    newListCollectionId: number,
+    newTaskIndex: number,
+    todo: Task;
+    boardId: number,
+}
+
+export type DeleteTodoList = {
+    listIndex: number,
+    boardIndex: number,
+    boardId: number,
+    collId: number
+}
+
+export type PostTodoList = {
+    name: string,
+    desc: string,
+    boardId: number,
+}
+
+export type PostBoard = {
+    name: string
+}

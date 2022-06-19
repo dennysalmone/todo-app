@@ -15,6 +15,7 @@ export class SiteLayoutComponent implements OnInit {
 
   logout() {
     console.log('logout')
+    localStorage.removeItem('Board');
     this.auth.logout();
   }
 

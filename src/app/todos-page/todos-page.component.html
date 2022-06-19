@@ -9,7 +9,7 @@
           <div *ngIf="checkSelectedBoard(b)" id="{{list.collectionId}}" class="collection-container">
             <div class="header-block">
               <span class="header-text">{{list.name}}</span>
-              <span><img (click)="serverDeleteCollection(y, b, board.id)" class="delete-folder-png"></span>
+              <span><img (click)="deleteTodoList(y, b, board.id, list.collectionId)" class="delete-folder-png"></span>
             </div>
             <div cdkDropList 
             (cdkDropListDropped)="onDrop($event, list.collectionId)"
@@ -18,8 +18,8 @@
               <ng-container *ngFor="let task of list.todos; index as x">
                 <ul cdkDrag class="collection">
                   <li class="collection-item">
-                    <span class='task-title'>{{task?.title}}</span>                 
-                    <img (click)="serverRequestDelete(task, list.collectionId, y, board.id, b)" class="delete-png">
+                    <span class='task-title'>{{task.title}}</span>                 
+                    <img (click)="deleteTodo(task, list.collectionId, y, board.id, b)" class="delete-png">
                   </li>
                 </ul>
               </ng-container>
@@ -39,4 +39,3 @@
     </div>
   </ng-container>
 </div>
-
