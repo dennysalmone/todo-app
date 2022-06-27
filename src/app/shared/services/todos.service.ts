@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Observable, Subject } from "rxjs";
-import { TodoList, Task, Board, DeleteTodo, PostTodo, DragAndDropTodo, DeleteTodoList, PostTodoList, PostBoard, DeleteBoard, getBoards, Acess, changeAccesList } from "src/app/types/types";
+import { DeleteTodo, PostTodo, DragAndDropTodo, DeleteTodoList, PostTodoList, PostBoard, DeleteBoard, getBoards, changeAccesList } from "src/app/types/types";
 import { environment } from 'src/environments/environment';
 
 @Injectable()
@@ -13,14 +13,14 @@ export class TodosService {
     todoCreated$ = new Subject<{name: string}>();
     todoListCreated$ = new Subject<{name: string, desc: string}>();
     boardCreated$ = new Subject<{name: string}>();
-    boardAcces$ = new Subject<{acess: string[]}>();
+    boardAcces$ = new Subject<{access: string[]}>();
 
     getBoards(): Observable<getBoards> {
         return this.http.get<getBoards>(`${environment.URL}boards`)
     }
 
-    changeAcessListBoard(data: changeAccesList): Observable<any> {
-        return this.http.post<changeAccesList>(`${environment.URL}boards-acess`, data)
+    changeAccessListBoard(data: changeAccesList): Observable<any> {
+        return this.http.post<changeAccesList>(`${environment.URL}boards-access`, data)
     }
 
     createBoard(data: PostBoard): Observable<any> {
