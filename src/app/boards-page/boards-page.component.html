@@ -1,0 +1,12 @@
+<div class="block-boards">
+    <ng-container *ngFor="let board of boards; index as z">
+      <div class="board-element" [ngClass]="{'current-board' : currentBoardCheck(z)}">
+          <span *ngIf="checkUserIsAuthor(board)"><img (click)="changeAccesListDialog(board)" class="add-user-png"></span>
+          <span class='span-selection' (dblclick)="redirectToBoard(z)" (click)="selectBoard(z)">{{board.name}}</span>
+          <img *ngIf="checkBoardForDelete(z, board)" (click)="deleteBoard(z, board)" class="delete-png">
+      </div>
+    </ng-container>
+    <div class="board-element create-board" (click)="openBoardDialog()">
+      <span>Create new board</span>
+    </div>
+  </div>

@@ -1,7 +1,6 @@
-<div class="board-name">{{boards[choisedBoard]?.name}}</div>
+<div class="board-name">Board: {{boards[choisedBoard]?.name}}</div>
 
 <div class="wrapper">
-  <button class='btn indigo darken-1 btn-newfolder' (click)="openBoardDialog()"><i class="material-icons left">dashboard</i>Create new board</button> <br>
   <button class='btn indigo darken-1 btn-newfolder' (click)="openListDialog()"><i class="material-icons left">create_new_folder</i>Create new todolist</button>
   <div cdkDropListGroup class="all-containers">
     <ng-container *ngFor="let board of boards; index as b">
@@ -30,12 +29,4 @@
         </ng-container>
     </ng-container>
   </div>  
-</div>
-      
-<div class="block-boards">
-  <ng-container *ngFor="let board of boards; index as z">
-    <div (click)="selectBoard(z)" class="board-element" [ngClass]="{'current-board' : currentBoardCheck(z)}">
-        {{board.name}}
-    </div>
-  </ng-container>
 </div>
