@@ -130,6 +130,13 @@ export class BoardsPageComponent implements OnInit {
     this.choisedBoard = Number(localStorage.getItem('Board'));
   }
 
+  checkBoardForDelete(z: number, board: Board): boolean {
+    if (this.boards[z].lists.length) {
+      return false;
+    }
+    return true;
+  }
+
   deleteBoard(z: number, board: Board): void {
     if (!this.boards[z].lists.length) {
       let data: DeleteBoard = { boardId: board.id }
@@ -148,13 +155,6 @@ export class BoardsPageComponent implements OnInit {
       this.selectBoard(0)
     }
     return;
-  }
-
-  checkBoardForDelete(z: number, board: Board): boolean {
-    if (this.boards[z].lists.length) {
-      return false;
-    }
-    return true;
   }
 
 }
