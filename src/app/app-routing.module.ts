@@ -1,5 +1,6 @@
 import { NgModule } from "@angular/core";
 import { RouterModule, Routes } from "@angular/router";
+import { BoardsPageComponent } from "./boards-page/boards-page.component";
 import { LoginPageComponent } from "./login-page/login-page.component";
 import { RegisterPageComponent } from "./register-page/register-page.component";
 import { AuthGuard } from "./shared/classes/auth.guard";
@@ -18,6 +19,7 @@ const routes: Routes = [
     {
         path: "", component: SiteLayoutComponent, canActivate: [AuthGuard], children: [
             {path: "todolist", component: TodosPageComponent},
+            {path: "boards", component: BoardsPageComponent},
         ]
     }
 ]

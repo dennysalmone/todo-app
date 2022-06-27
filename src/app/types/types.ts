@@ -56,3 +56,21 @@ export type PostTodoList = {
 export type PostBoard = {
     name: string
 }
+
+export type DeleteBoard = {
+    boardId: number
+}
+
+export type getBoards = {
+    email: string,
+    boards: Board[]
+}
+
+export type Acess = {
+    acess: string[]
+}
+
+export type changeAccesList = {
+    acess: string[],
+    boardId: number
+}

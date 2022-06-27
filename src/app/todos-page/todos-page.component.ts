@@ -1,5 +1,5 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { TodoList, Task, Board, DeleteTodo, PostTodo, DragAndDropTodo, DeleteTodoList, PostTodoList, PostBoard } from '../types/types';
+import { Component, OnInit } from '@angular/core';
+import { Task, Board, DeleteTodo, PostTodo, DragAndDropTodo, DeleteTodoList, PostTodoList, getBoards } from '../types/types';
 import { CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop'
 import { TodosService } from '../shared/services/todos.service';
 import { MaterialService } from '../shared/classes/material.service';
@@ -8,14 +8,14 @@ import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { CreateTodolistModalComponent } from '../create-todolist-modal/create-todolist-modal.component';
 import { CreateTodoModalComponent } from '../create-todo-modal/create-todo-modal.component';
 import { Subscription } from 'rxjs/internal/Subscription';
-import { CreateBoardModalComponent } from '../create-board-modal/create-board-modal.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-todos-page',
   templateUrl: './todos-page.component.html',
   styleUrls: ['./todos-page.component.scss']
 })
-
+ 
 export class TodosPageComponent implements OnInit {
   aSub!: Subscription;
   bSub!: Subscription;
@@ -26,8 +26,9 @@ export class TodosPageComponent implements OnInit {
   choisedBoard: number = 0;
   URL: string = `${environment.URL}todo`;
   boards: Board[] = []
+  userEmail: string = '';
   
-  constructor(private todoService: TodosService, private dialog: MatDialog) {
+  constructor(private todoService: TodosService, private dialog: MatDialog, private router: Router) {
 
   }
 
@@ -38,14 +39,23 @@ export class TodosPageComponent implements OnInit {
 
   getBoards(): void {
     this.bSub = this.todoService.getBoards().subscribe({
-      next: (v: Board[]) => {
-        this.boards = v
+      next: (v: getBoards) => {
+        this.boards = v.boards
+        this.userEmail = v.email
         this.checkLocalStorage()
+        this.checkBoards()
+        console.log(this.boards)
       },
       error: (e) => {
         MaterialService.toast(e.error.message)
       }
     })
+  }
+
+  checkBoards(): void {
+    if(!this.boards.length) {
+      this.router.navigate(['/boards'])
+    }
   }
 
   checkLocalStorage(): void {
@@ -53,23 +63,11 @@ export class TodosPageComponent implements OnInit {
   }
 
   postTodoList(data: {name: string, desc: string}): void { // post list
-    
     let boardForCreate = this.boards[this.choisedBoard]
     const newList: PostTodoList = {name: data.name, desc: data.desc, boardId: boardForCreate.id}
     this.aSub = this.todoService.createTodoList(newList).subscribe({
       next: (v) => {
         boardForCreate.lists.push({name: v.name, desc: v.desc, collectionId: v.collectionId, todos: []})
-      },
-      error: (e) => {
-        MaterialService.toast(e.error.message)
-      }
-    })
-  }
-
-  postBoard(data: PostBoard): void { // post board
-    this.aSub = this.todoService.createBoard(data).subscribe({
-      next: (v) => {
-        this.boards.push(v)
       },
       error: (e) => {
         MaterialService.toast(e.error.message)
@@ -150,19 +148,6 @@ export class TodosPageComponent implements OnInit {
     this.dialog.open(CreateTodolistModalComponent, dialogConfig)
   }
 
-  openBoardDialog (): void {
-    this.dialogBoardSub = this.todoService.boardCreated$.subscribe(
-        (data) => {
-          this.dialogBoardSub.unsubscribe()
-          this.postBoard(data as {name: string})
-        }
-    )
-    const dialogConfig = new MatDialogConfig();
-    dialogConfig.disableClose = true;
-    dialogConfig.autoFocus = true;
-    this.dialog.open(CreateBoardModalComponent, dialogConfig)
-  }
-
   selectBoard(index: number): void {
     this.choisedBoard = index;
     localStorage.setItem('Board', String(this.choisedBoard));
@@ -170,13 +155,6 @@ export class TodosPageComponent implements OnInit {
 
   checkSelectedBoard(index: number): boolean {
     return this.choisedBoard === index;
-  }
-
-  currentBoardCheck(index: number): boolean {
-    if(this.choisedBoard === index) {
-      return true;
-    }
-    return false;
   }
 
   onDrop(event: CdkDragDrop <Task[]>, collectionId: number): void {

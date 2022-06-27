@@ -6,10 +6,10 @@
                 (ngSubmit)="onSubmit()">
                   <div class="row">
                     <div class="input-field col s12">
-                        <input maxlength="170" formControlName="name" class="validate" required placeholder="your list name...">
+                        <input maxlength="32" formControlName="name" class="validate" required placeholder="your list name...">
                     </div>
                     <div class="input-field col s12">
-                        <input maxlength="170" formControlName="desc" class="validate" required placeholder="your list description...">
+                        <input maxlength="300" formControlName="desc" class="validate" required placeholder="your list description...">
                     </div>
                   </div>
                   <button [disabled]="form.invalid" class="btn indigo darken-1 close-btn">Submit</button> 
