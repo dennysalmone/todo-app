@@ -8,7 +8,7 @@ import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { CreateTodolistModalComponent } from '../create-todolist-modal/create-todolist-modal.component';
 import { CreateTodoModalComponent } from '../create-todo-modal/create-todo-modal.component';
 import { Subscription } from 'rxjs/internal/Subscription';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-todos-page',
@@ -28,8 +28,8 @@ export class TodosPageComponent implements OnInit {
   boards: Board[] = []
   userEmail: string = '';
   
-  constructor(private todoService: TodosService, private dialog: MatDialog, private router: Router) {
-
+  constructor(private todoService: TodosService, private dialog: MatDialog, private router: Router, private route: ActivatedRoute) {
+    this.route.queryParams.subscribe(params => this.selectBoard(params['list']))
   }
 
   ngOnInit (): void {
@@ -44,7 +44,6 @@ export class TodosPageComponent implements OnInit {
         this.userEmail = v.email
         this.checkLocalStorage()
         this.checkBoards()
-        console.log(this.boards)
       },
       error: (e) => {
         MaterialService.toast(e.error.message)
@@ -149,6 +148,9 @@ export class TodosPageComponent implements OnInit {
   }
 
   selectBoard(index: number): void {
+    if(!index) {
+      return;
+    }
     this.choisedBoard = index;
     localStorage.setItem('Board', String(this.choisedBoard));
   }

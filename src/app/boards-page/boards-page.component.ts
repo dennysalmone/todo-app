@@ -1,9 +1,9 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Board, PostBoard, DeleteBoard, getBoards, changeAccesList } from '../types/types';
 import { TodosService } from '../shared/services/todos.service';
 import { MaterialService } from '../shared/classes/material.service';
 import { environment } from 'src/environments/environment';
-import { MatDialog, MatDialogConfig, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { Subscription } from 'rxjs/internal/Subscription';
 import { CreateBoardModalComponent } from '../create-board-modal/create-board-modal.component';
 import { Router } from '@angular/router';
@@ -48,7 +48,7 @@ export class BoardsPageComponent implements OnInit {
   }
 
   changeAccesListDialog (board: Board): void {
-    let acces = board.acess;
+    let acces = board.access;
     this.dialogBoardSub = this.todoService.boardAcces$.subscribe(
         (data) => {
           this.dialogBoardSub.unsubscribe()
@@ -62,11 +62,11 @@ export class BoardsPageComponent implements OnInit {
     this.dialog.open(AddUserToBoardComponent, { data: { acces: acces, author: this.userEmail } } )
   }
 
-  changeAccesList(acess: string[], id: number) {
-    let data: changeAccesList = {acess: acess, boardId: id}
-    this.cSub = this.todoService.changeAcessListBoard(data).subscribe({
+  changeAccesList(access: string[], id: number) {
+    let data: changeAccesList = {access: access, boardId: id}
+    this.cSub = this.todoService.changeAccessListBoard(data).subscribe({
       next: () => {
-        console.log('changed acess')
+        console.log('changed access')
       },
       error: (e) => {
         MaterialService.toast(e.error.message)
@@ -99,9 +99,9 @@ export class BoardsPageComponent implements OnInit {
 
   redirectToBoard(index: number): void {
     this.selectBoard(index)
-    this.router.navigate(['/todolist'])
+    this.router.navigate([`/todolist`], { queryParams: { list: index }});// todolist?list=3
   }
-
+  
   checkSelectedBoard(index: number): boolean {
     return this.choisedBoard === index;
   }
@@ -130,6 +130,13 @@ export class BoardsPageComponent implements OnInit {
     this.choisedBoard = Number(localStorage.getItem('Board'));
   }
 
+  checkBoardForDelete(z: number, board: Board): boolean {
+    if (this.boards[z].lists.length) {
+      return false;
+    }
+    return true;
+  }
+
   deleteBoard(z: number, board: Board): void {
     if (!this.boards[z].lists.length) {
       let data: DeleteBoard = { boardId: board.id }
@@ -148,13 +155,6 @@ export class BoardsPageComponent implements OnInit {
       this.selectBoard(0)
     }
     return;
-  }
-
-  checkBoardForDelete(z: number, board: Board): boolean {
-    if (this.boards[z].lists.length) {
-      return false;
-    }
-    return true;
   }
 
 }

@@ -15,7 +15,7 @@ export type Board = {
     name: string;
     id: number;
     author: string;
-    acess: string[];
+    access: string[];
     lists: TodoList[]
 }
 
@@ -66,11 +66,11 @@ export type getBoards = {
     boards: Board[]
 }
 
-export type Acess = {
-    acess: string[]
+export type Access = {
+    access: string[]
 }
 
 export type changeAccesList = {
-    acess: string[],
+    access: string[],
     boardId: number
 }
