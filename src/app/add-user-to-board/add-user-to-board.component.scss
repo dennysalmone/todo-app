@@ -44,3 +44,17 @@
     margin: 2px;
     border-radius: 5px;
 }
+
+@media (max-device-width: 992px) {
+    .modal-window {
+        max-width: 80%;
+        min-width: 80%;
+    }
+}
+
+@media (max-device-width: 500px) {
+    .modal-window {
+        max-width: 95%;
+        min-width: 95%;
+    }
+}

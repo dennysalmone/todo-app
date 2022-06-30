@@ -1,5 +1,5 @@
 .wrapper {
-    margin-left: 5px;
+    margin-left: 15px;
     margin-top: 5px;
     margin-right: 5px;
 }
@@ -78,7 +78,6 @@
 .collection {
     margin-top: 0px;
     margin-bottom: 1px;
-    // overflow: visible;
     border-radius: 8px;
 }
 
@@ -97,14 +96,14 @@
 
 .collection-container {
     min-height: 180px;
-    max-width: 36%;
-    min-width: 26%;
-
+    max-width: 32%;
+    min-width: 32%;
     flex-grow: 1;
     border-radius: 8px;
     border: 1px solid rgba(0, 0, 0, 0.20);
     background-color:rgba(255, 255, 255, 0.20);
     margin-right: 2px;
+    margin-bottom: 2px;
 }
 
 .task-list {
@@ -178,7 +177,8 @@
 }
 
 .board-name {
-    font-size: 30px;
+    font-size: 26px;
+    line-height: 26px;
     margin: 7px;
     padding: 7px;
 }
@@ -187,3 +187,26 @@
     font-weight: bold
 }
 
+@media (max-device-width: 992px) {
+    .collection-container {
+        min-height: 120px;
+        max-width: 48%;
+        min-width: 48%;
+    }
+    .board-name {
+        font-size: 20px;
+        line-height: 20px;
+    }
+}
+
+@media (max-device-width: 500px) {
+    .collection-container {
+        min-height: 80px;
+        max-width: 96%;
+        min-width: 96%;
+    }
+    .board-name {
+        font-size: 16px;
+        line-height: 16px;
+    }
+}

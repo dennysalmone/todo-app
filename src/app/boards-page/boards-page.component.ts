@@ -78,6 +78,7 @@ export class BoardsPageComponent implements OnInit {
     this.aSub = this.todoService.createBoard(data).subscribe({
       next: (v) => {
         this.boards.push(v)
+        this.router.navigate([`/todolist`], { queryParams: { list: this.boards.length-1 }});// todolist?list=3
       },
       error: (e) => {
         MaterialService.toast(e.error.message)

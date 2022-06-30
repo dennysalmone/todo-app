@@ -125,15 +125,15 @@
 
 .board-element {
     border: black solid 1px;
-    max-width: 23%;
-    min-width: 23%;
+    max-width: 24.3%;
+    min-width: 24.3%;
     min-height: 50px;
     flex: 1;
     word-break: break-word;
     word-wrap: break-word;
     overflow-wrap: break-word;
     cursor: pointer;
-    font-size: 22px;
+    font-size: 18px;
     margin: 4px;
     padding: 4px;
     display: flex;
@@ -186,5 +186,21 @@
     float: right;
     cursor: pointer;
     content: url(add_user.png);
+}
+
+@media (max-device-width: 992px) {
+    .board-element {
+        max-width: 48%;
+        min-width: 48%;
+        font-size: 18px;
+    }
+}
+
+@media (max-device-width: 500px) {
+    .board-element {
+        max-width: 96%;
+        min-width: 96%;
+        font-size: 14px;
+    }
 }
 
