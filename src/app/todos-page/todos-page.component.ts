@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Task, Board, DeleteTodo, PostTodo, DragAndDropTodo, DeleteTodoList, PostTodoList, getBoards } from '../types/types';
+import { Task, Board, DeleteTodo, PostTodo, DragAndDropTodo, DeleteTodoList, PostTodoList, receivedBoards } from '../types/types';
 import { CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop'
 import { TodosService } from '../shared/services/todos.service';
 import { MaterialService } from '../shared/classes/material.service';
@@ -23,7 +23,7 @@ export class TodosPageComponent implements OnInit {
   dialogTodoSub!: Subscription;
   dialogBoardSub!: Subscription;
   newTodotask: string = '';
-  choisedBoard: number = 0;
+  selectedBoard: number = 0;
   URL: string = `${environment.URL}todo`;
   boards: Board[] = []
   userEmail: string = '';
@@ -39,7 +39,7 @@ export class TodosPageComponent implements OnInit {
 
   getBoards(): void {
     this.bSub = this.todoService.getBoards().subscribe({
-      next: (v: getBoards) => {
+      next: (v: receivedBoards) => {
         this.boards = v.boards
         this.userEmail = v.email
         this.checkLocalStorage()
@@ -58,11 +58,11 @@ export class TodosPageComponent implements OnInit {
   }
 
   checkLocalStorage(): void {
-    this.choisedBoard = Number(localStorage.getItem('Board'));
+    this.selectedBoard = Number(localStorage.getItem('Board'));
   }
 
   postTodoList(data: {name: string, desc: string}): void { // post list
-    let boardForCreate = this.boards[this.choisedBoard]
+    let boardForCreate = this.boards[this.selectedBoard]
     const newList: PostTodoList = {name: data.name, desc: data.desc, boardId: boardForCreate.id}
     this.aSub = this.todoService.createTodoList(newList).subscribe({
       next: (v) => {
@@ -151,12 +151,12 @@ export class TodosPageComponent implements OnInit {
     if(!index) {
       return;
     }
-    this.choisedBoard = index;
-    localStorage.setItem('Board', String(this.choisedBoard));
+    this.selectedBoard = index;
+    localStorage.setItem('Board', String(this.selectedBoard));
   }
 
   checkSelectedBoard(index: number): boolean {
-    return this.choisedBoard === index;
+    return this.selectedBoard === index;
   }
 
   onDrop(event: CdkDragDrop <Task[]>, collectionId: number): void {
@@ -178,7 +178,7 @@ export class TodosPageComponent implements OnInit {
       newListCollectionId: collectionId,
       newTaskIndex: event.currentIndex,
       todo: event.container.data[event.currentIndex],
-      boardId: this.boards[this.choisedBoard].id,
+      boardId: this.boards[this.selectedBoard].id,
     };
     this.postDragAndDrop(data)
   }

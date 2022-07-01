@@ -40,7 +40,7 @@ export class AddUserToBoardComponent implements OnInit {
  
   close() {
     console.log(this.data.acces)
-    this.todoService.boardAcces$.next(this.data.acces)
+    this.todoService.boardAccess$.next(this.data.acces)
     this.dialogRef.close();
   }
 }

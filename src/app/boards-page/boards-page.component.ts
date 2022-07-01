@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Board, PostBoard, DeleteBoard, getBoards, changeAccesList } from '../types/types';
+import { Board, PostBoard, DeleteBoard, changeAccesList, receivedBoards } from '../types/types';
 import { TodosService } from '../shared/services/todos.service';
 import { MaterialService } from '../shared/classes/material.service';
 import { environment } from 'src/environments/environment';
@@ -21,7 +21,7 @@ export class BoardsPageComponent implements OnInit {
   bSub!: Subscription;
   cSub!: Subscription;
   dialogBoardSub!: Subscription;
-  choisedBoard: number = 0;
+  selectedBoard: number = 0;
   URL: string = `${environment.URL}todo`;
   boards: Board[] = [];
   userEmail: string = '';
@@ -49,7 +49,7 @@ export class BoardsPageComponent implements OnInit {
 
   changeAccesListDialog (board: Board): void {
     let acces = board.access;
-    this.dialogBoardSub = this.todoService.boardAcces$.subscribe(
+    this.dialogBoardSub = this.todoService.boardAccess$.subscribe(
         (data) => {
           this.dialogBoardSub.unsubscribe()
           console.log(data)
@@ -94,8 +94,8 @@ export class BoardsPageComponent implements OnInit {
   }
 
   selectBoard(index: number): void {
-    this.choisedBoard = index;
-    localStorage.setItem('Board', String(this.choisedBoard));
+    this.selectedBoard = index;
+    localStorage.setItem('Board', String(this.selectedBoard));
   }
 
   redirectToBoard(index: number): void {
@@ -104,11 +104,11 @@ export class BoardsPageComponent implements OnInit {
   }
   
   checkSelectedBoard(index: number): boolean {
-    return this.choisedBoard === index;
+    return this.selectedBoard === index;
   }
 
   currentBoardCheck(index: number): boolean {
-    if(this.choisedBoard === index) {
+    if(this.selectedBoard === index) {
       return true;
     }
     return false;
@@ -116,7 +116,7 @@ export class BoardsPageComponent implements OnInit {
 
   getBoards(): void {
     this.bSub = this.todoService.getBoards().subscribe({
-      next: (v: getBoards) => {
+      next: (v: receivedBoards) => {
         this.boards = v.boards
         this.userEmail = v.email
         this.checkLocalStorage()
@@ -128,7 +128,7 @@ export class BoardsPageComponent implements OnInit {
   }
 
   checkLocalStorage(): void {
-    this.choisedBoard = Number(localStorage.getItem('Board'));
+    this.selectedBoard = Number(localStorage.getItem('Board'));
   }
 
   checkBoardForDelete(z: number, board: Board): boolean {
@@ -150,9 +150,9 @@ export class BoardsPageComponent implements OnInit {
         }
       })
     }
-    if(this.choisedBoard > z) {
-      this.selectBoard(this.choisedBoard-1)
-    } else if (this.choisedBoard = z) {
+    if(this.selectedBoard > z) {
+      this.selectBoard(this.selectedBoard-1)
+    } else if (this.selectedBoard = z) {
       this.selectBoard(0)
     }
     return;

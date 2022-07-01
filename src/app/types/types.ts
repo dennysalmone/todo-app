@@ -61,7 +61,7 @@ export type DeleteBoard = {
     boardId: number
 }
 
-export type getBoards = {
+export type receivedBoards = {
     email: string,
     boards: Board[]
 }
