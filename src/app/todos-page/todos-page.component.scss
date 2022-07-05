@@ -23,7 +23,7 @@
     position: relative;
     float: right;
     cursor: pointer;
-    content: url(add_item.png);
+    content: url('/assets/images/add_item.png');
 }
 
 .header-text {
@@ -42,7 +42,7 @@
     height: 25px;
     margin: 0 0 0 auto;
     cursor: pointer;
-    content: url(delete.png);
+    content: url('/assets/images/delete.png');
 }
 
 .delete-folder-png {
@@ -51,7 +51,7 @@
     height: 27px;
     margin: 2px;
     cursor: pointer;
-    content: url(delete_folder.png);
+    content: url('/assets/images/delete_folder.png');
 }
 
 .delete-png :hover {

@@ -34,7 +34,7 @@ $angular-todo-frontend-theme: mat.define-light-theme((
 @include mat.all-component-themes($angular-todo-frontend-theme);
 
 .mat-typography {
-  background: url('https://a.travel-assets.com/findyours-php/viewfinder/images/res70/74000/74196-Utah.jpg');
+  background: url('/assets/images/backcover.png');
   background-size: cover;
 }
 html, body { height: 100%; }

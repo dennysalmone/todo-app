@@ -31,7 +31,7 @@
     height: 25px;
     margin: 0 0 0 auto;
     cursor: pointer;
-    content: url(delete.png);
+    content: url('/assets/images/delete.png');
     flex: 1;
 }
 
@@ -185,7 +185,7 @@
     position: relative;
     float: right;
     cursor: pointer;
-    content: url(add_user.png);
+    content: url('/assets/images/add_user.png');
 }
 
 @media (max-device-width: 992px) {
